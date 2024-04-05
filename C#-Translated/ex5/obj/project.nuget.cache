@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "dgSpecHash": "trMp+9W+LrvdqVSxEsreVAgTO4D82iLb9dtHPvitVmabms7z75n1bTLRYK1dtjodpSz2NRItc1IVt7Z9X1XOzg==",
+  "success": true,
+  "projectFilePath": "/Users/sandu/Uni/Thesis/examples/C#-Translated/ex5/ex5.csproj",
+  "expectedPackageFiles": [
+    "/Users/sandu/.nuget/packages/microsoft.codecoverage/17.9.0/microsoft.codecoverage.17.9.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/microsoft.net.test.sdk/17.9.0/microsoft.net.test.sdk.17.9.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/microsoft.testplatform.objectmodel/17.9.0/microsoft.testplatform.objectmodel.17.9.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/microsoft.testplatform.testhost/17.9.0/microsoft.testplatform.testhost.17.9.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/nunit/4.1.0/nunit.4.1.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/nunit.console/3.17.0/nunit.console.3.17.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/nunit.consolerunner/3.17.0/nunit.consolerunner.3.17.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/nunit.extension.nunitprojectloader/3.6.0/nunit.extension.nunitprojectloader.3.6.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/nunit.extension.nunitv2driver/3.8.0/nunit.extension.nunitv2driver.3.8.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/nunit.extension.nunitv2resultwriter/3.6.0/nunit.extension.nunitv2resultwriter.3.6.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/nunit.extension.teamcityeventlistener/1.0.7/nunit.extension.teamcityeventlistener.1.0.7.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/nunit.extension.vsprojectloader/3.8.0/nunit.extension.vsprojectloader.3.8.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/nunit3testadapter/4.5.0/nunit3testadapter.4.5.0.nupkg.sha512",
+    "/Users/sandu/.nuget/packages/system.reflection.metadata/1.6.0/system.reflection.metadata.1.6.0.nupkg.sha512"
+  ],
+  "logs": []
+}
