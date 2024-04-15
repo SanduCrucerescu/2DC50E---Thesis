@@ -2,32 +2,40 @@
 
 using NUnit.Framework.Legacy;
 
+[Category("Template")]
+[TestFixture]
 public class ConditionsTests
 {
     private const string exptTrue = "The person is eligible for this position.";
     private const string exptFalse = "The person is underage!";
 
-    [TestCase(89, "Conditions")]
-    [TestCase(19, "Conditions")]
-    public void Should_Return_True_If_Over_18(int x, string np)
+    [TestCase(89)]
+    [TestCase(19)]
+    public void Should_Return_True_If_Over_18(int x)
     {
-        string fullyQualifiedClassName = String.Format("{0}.Program, {0}, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", np);
-        using (var runner = new DisposableRunner(fullyQualifiedClassName, "StudentAge", [x]))
+        using (var sw = new StringWriter())
         {
-            var res = runner.GetOutput();
-            ClassicAssert.AreEqual(exptTrue, res);
+            Console.SetOut(sw);
+
+            Program.StudentAge(x);
+
+            var result = sw.ToString().Trim();
+            ClassicAssert.AreEqual(exptTrue, result);
         }
     }
 
-    [TestCase(17, "Conditions")]
-    [TestCase(2, "Conditions")]
-    public void Should_Return_False_If_Under_18(int x, string np)
+    [TestCase(17)]
+    [TestCase(2)]
+    public void Should_Return_False_If_Under_18(int x)
     {
-        string fullyQualifiedClassName = String.Format("{0}.Program, {0}, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", np);
-        using (var runner = new DisposableRunner(fullyQualifiedClassName, "StudentAge", [x]))
+        using (var sw = new StringWriter())
         {
-            var res = runner.GetOutput();
-            ClassicAssert.AreEqual(exptFalse, res);
+            Console.SetOut(sw);
+
+            Program.StudentAge(x);
+
+            var result = sw.ToString().Trim();
+            ClassicAssert.AreEqual(exptFalse, result);
         }
     }
 }

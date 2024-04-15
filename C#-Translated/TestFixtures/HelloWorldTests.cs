@@ -2,21 +2,25 @@ namespace TestFixtures;
 
 using System.Reflection;
 using NUnit.Framework.Legacy;
+using NUnit.Framework.Internal;
 
-
-public class HelloWorld
+[Category("Template")]
+[TestFixture]
+public class HelloWorldTests
 {
     private const string Expected = "Hello World from Pascal!";
 
-    [TestCase("HelloWorld")]
-    public void Should_Print_Hello_World(string np)
+    [Test]
+    public void Should_Print_Hello_World(string p)
     {
-        string fullyQualifiedClassName = String.Format("{0}.Program, {0}, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", np);
-
-        using (var runner = new DisposableRunner(fullyQualifiedClassName, "Main"))
+        using (var sw = new StringWriter())
         {
-            var res = runner.GetOutput();
-            ClassicAssert.AreEqual(Expected, res);
+            Console.SetOut(sw);
+
+            Program.Main();
+
+            var result = sw.ToString().Trim();
+            ClassicAssert.AreEqual(Expected, result);
         }
     }
 }

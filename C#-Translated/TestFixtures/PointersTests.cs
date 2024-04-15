@@ -2,18 +2,17 @@
 
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
-using Pointers;
 
-
+[Category("Template")]
 [TestFixture]
 public class Pointer
 {
-    private Pointers.Program.AddressBook addressBook;
+    private AddressBook addressBook;
 
     [SetUp]
     public void Setup()
     {
-        addressBook = new Pointers.Program.AddressBook();
+        addressBook = new AddressBook();
     }
 
     [Test]
@@ -39,7 +38,7 @@ public class Pointer
         string phoneNumber = "0987654321";
         addressBook.AddContact(name, email, phoneNumber);
 
-        Pointers.Program.Contact foundContact = addressBook.SearchContact(name);
+        Contact foundContact = addressBook.SearchContact(name);
 
         ClassicAssert.IsNotNull(foundContact);
         ClassicAssert.AreEqual(name, foundContact.Name);
@@ -52,7 +51,7 @@ public class Pointer
     {
         string nonExistentName = "NonExistent";
 
-        Pointers.Program.Contact foundContact = addressBook.SearchContact(nonExistentName);
+        Contact foundContact = addressBook.SearchContact(nonExistentName);
 
         ClassicAssert.IsNull(foundContact);
     }
@@ -81,7 +80,7 @@ public class Pointer
     [Test]
     public void SmokeTest_AddressBookConstructor()
     {
-        Assert.DoesNotThrow(() => new Pointers.Program.AddressBook());
+        Assert.DoesNotThrow(() => new AddressBook());
     }
 
     [Test]

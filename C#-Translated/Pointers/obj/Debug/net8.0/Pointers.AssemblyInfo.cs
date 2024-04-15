@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Pointers")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+26588c1928816dd91461690b3e1eb43be68666a1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a8429b392d42e525e7a3faea0181ac2b258ca3bd")]
 [assembly: System.Reflection.AssemblyProductAttribute("Pointers")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Pointers")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

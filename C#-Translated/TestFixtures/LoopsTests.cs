@@ -1,8 +1,10 @@
 ﻿
-namespace TestFixtures;
+namespace loops.Test;
 using loops;
 using NUnit.Framework.Legacy;
 
+[Category("Template")]
+[TestFixture]
 public class LoopsTests
 {
     [TestCase("2")]
@@ -13,13 +15,13 @@ public class LoopsTests
         using (var sw = new StringWriter())
         {
 
-            loops.Program.Student[] students;
+            Student[] students;
             using (var sr = new StringReader(x))
             {
                 Console.SetIn(sr);
                 Console.SetOut(sw);
 
-                loops.Program.InitArray(out students);
+                Program.InitArray(out students);
 
                 ClassicAssert.IsNotNull(students);
                 ClassicAssert.AreEqual(Int32.Parse(x), students.Length);
@@ -32,14 +34,14 @@ public class LoopsTests
     {
         using (var sw = new StringWriter())
         {
-            loops.Program.Student[] students = new loops.Program.Student[2];
+            var students = new Student[2];
 
             string[] simulatedInput = { "John", "Doe", "90", "Jane", "Smith", "85" };
             StringReader sr = new StringReader(string.Join(Environment.NewLine, simulatedInput));
             Console.SetIn(sr);
             Console.SetOut(sw);
 
-            loops.Program.AddStudentInformation(students);
+            Program.AddStudentInformation(students);
             ClassicAssert.IsNotNull(students);
             ClassicAssert.AreEqual(2, students.Length);
 

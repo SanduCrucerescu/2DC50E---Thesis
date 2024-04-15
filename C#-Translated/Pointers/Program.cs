@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 /*
     The translation was without any issues. Although Claude removed the pointers this is the explanation given:
@@ -13,7 +15,7 @@ using System.Collections.Generic;
     By using reference types and managed memory, the C# code avoids the complexity and potential issues associated with manual memory management with pointers, while providing similar functionality to the original Delphi code.
 */
 
-namespace Pointers;
+namespace Pointers1;
 
 public class Program
 {
@@ -120,6 +122,118 @@ public class Program
                     Console.WriteLine("Invalid command");
                     break;
             }
+        }
+    }
+
+    [TestFixture]
+    public class Pointer
+    {
+        private AddressBook addressBook;
+
+        [SetUp]
+        public void Setup()
+        {
+            addressBook = new AddressBook();
+        }
+
+        [Test]
+        public void AddContact_ShouldAddContactToList()
+        {
+            string name = "John Doe";
+            string email = "john.doe@example.com";
+            string phoneNumber = "1234567890";
+
+            addressBook.AddContact(name, email, phoneNumber);
+
+            ClassicAssert.AreEqual(1, addressBook.Contacts.Count);
+            ClassicAssert.AreEqual(name, addressBook.Contacts[0].Name);
+            ClassicAssert.AreEqual(email, addressBook.Contacts[0].Email);
+            ClassicAssert.AreEqual(phoneNumber, addressBook.Contacts[0].PhoneNumber);
+        }
+
+        [Test]
+        public void SearchContact_ShouldReturnContactWhenFound()
+        {
+            string name = "Jane Smith";
+            string email = "jane.smith@example.com";
+            string phoneNumber = "0987654321";
+            addressBook.AddContact(name, email, phoneNumber);
+
+            Contact foundContact = addressBook.SearchContact(name);
+
+            ClassicAssert.IsNotNull(foundContact);
+            ClassicAssert.AreEqual(name, foundContact.Name);
+            ClassicAssert.AreEqual(email, foundContact.Email);
+            ClassicAssert.AreEqual(phoneNumber, foundContact.PhoneNumber);
+        }
+
+        [Test]
+        public void SearchContact_ShouldReturnNullWhenNotFound()
+        {
+            string nonExistentName = "NonExistent";
+
+            Contact foundContact = addressBook.SearchContact(nonExistentName);
+
+            ClassicAssert.IsNull(foundContact);
+        }
+
+        [Test]
+        public void RemoveContact_ShouldRemoveContactFromList()
+        {
+            string name = "Alice Brown";
+            string email = "alice.brown@example.com";
+            string phoneNumber = "5551234567";
+            addressBook.AddContact(name, email, phoneNumber);
+
+            addressBook.RemoveContact(name);
+
+            ClassicAssert.AreEqual(0, addressBook.Contacts.Count);
+        }
+
+        [Test]
+        public void RemoveContact_ShouldNotThrowExceptionWhenContactNotFound()
+        {
+            string nonExistentName = "NonExistent";
+
+            Assert.DoesNotThrow(() => addressBook.RemoveContact(nonExistentName));
+        }
+
+        [Test]
+        public void SmokeTest_AddressBookConstructor()
+        {
+            Assert.DoesNotThrow(() => new AddressBook());
+        }
+
+        [Test]
+        public void SmokeTest_AddContactMethod()
+        {
+            string name = "Test Contact";
+            string email = "test@example.com";
+            string phoneNumber = "1234567890";
+
+            Assert.DoesNotThrow(() => addressBook.AddContact(name, email, phoneNumber));
+        }
+
+        [Test]
+        public void SmokeTest_SearchContactMethod()
+        {
+            string name = "Test Contact";
+
+            Assert.DoesNotThrow(() => addressBook.SearchContact(name));
+        }
+
+        [Test]
+        public void SmokeTest_RemoveContactMethod()
+        {
+            string name = "Test Contact";
+
+            Assert.DoesNotThrow(() => addressBook.RemoveContact(name));
+        }
+
+        [Test]
+        public void SmokeTest_PrintContactsMethod()
+        {
+            Assert.DoesNotThrow(() => addressBook.PrintContacts());
         }
     }
 }
