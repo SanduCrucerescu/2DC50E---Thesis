@@ -1,0 +1,356 @@
+namespace CgApplogUnit
+{
+    using CompileChainUtilityUnit;
+    using SysUtils;
+    using Generics.Collections;
+    using ErrorFuncUnit;
+    using CgMainUnit;
+    using CgOutPrtUnit;
+    using P1xtUnit;
+    using StringUnit;
+    using ExrUnit;
+    using P1xUnit;
+
+    public static class Scope
+    {
+        private static TApplogMemoryManager ApplogMemoryManager;
+        private static TApplogSysData ApplogSysData;
+        private TApplogSysData GetApplogSysData()
+        {
+            if (!Assigned(ApplogSysData))
+            {
+                XMLDoc = TXmlDocument.Create(null);
+                XMLDoc.LoadFromFile(CgSysFileXmlName);
+                ApplogSysData = TApplogSysData.Create(XMLDoc);
+            }
+
+            Result = ApplogSysData;
+        }
+
+        private TApplogMemoryManager GetApplogMemoryManager()
+        {
+            if (!Assigned(ApplogMemoryManager))
+            {
+                XMLDoc = TXmlDocument.Create(null);
+                XMLDoc.LoadFromFile(CgSysFileXmlName);
+                if ((HasApplogEditor2007))
+                {
+                    ApplogMemoryManager = TApplog2007MemoryManager.Create(XMLDoc, OutPrtWr);
+                }
+                else if ((HasApplogEditor2012))
+                {
+                    ApplogMemoryManager = TApplog2012MemoryManager.Create(XMLDoc, OutPrtWr, ChangeFileExt(ProjectFileName, P1xtFileExtension));
+                }
+                else
+                {
+                    throw EP1Error.Create(_E_587_INTERNAL_UNEXPECTEDLY_REACHED_ELSE_IN_ps, new HashSet() { "GetApplogMemoryManager" });
+                }
+            }
+
+            Result = ApplogMemoryManager;
+        }
+
+        public delegate void TWriteCodeLineProcedure(string s);
+        public class TApplogMemoryManager
+        {
+            protected bool FMultipleApplogAllowed;
+            protected TWriteCodeLineProcedure FWriteCodeLineProcedure;
+            protected string[] FPortNames;
+            protected int[] FPortSizes;
+            protected int[] FPortBlockSizes;
+            protected int[] FBlockNumbers;
+            protected bool[] FPortInUse;
+            private void CheckAndPrepareAllocation(string PortName, int AFileSize, out int PortIndex, out int NumberOfBlocks)
+            {
+                PortIndex = -1;
+                for (int i = low(FPortNames); i < high(FPortNames); i++)
+                {
+                    if ((FPortNames[i] == PortName))
+                    {
+                        PortIndex = i;
+                        Break;
+                    }
+                }
+
+                if ((PortIndex < 0))
+                {
+                    throw EP1Error.Create(_E_315_APPLICATION_LOG_PORT_NOT_DEFINED_ps, new HashSet() { PortName });
+                }
+
+                if ((FPortInUse[PortIndex] && (!FMultipleApplogAllowed)))
+                {
+                    throw EP1Error.Create(_E_314_MAXIMUM_NUMBER_OF_APPLICATION_LOG_FILES_ps_EXCEEDED_ps, new HashSet() { "(1)", "" });
+                }
+
+                if (((FBlockNumbers[PortIndex] * FPortBlockSizes[PortIndex] + AFileSize) > FPortSizes[PortIndex]))
+                {
+                    throw EP1Error.Create(_E_339_INTERNAL_OUT_OF_APPLOG_MEMORY, new HashSet() { });
+                }
+
+                NumberOfBlocks = AFileSize / FPortBlockSizes[PortIndex];
+                if (((AFileSize % FPortBlockSizes[PortIndex]) != 0))
+                {
+                    throw EP1Error.Create(_E_340_INTERNAL_NOT_AN_INTEGER_AMOUNT_OF_APPLOG_BLOCKS, new HashSet() { });
+                }
+            }
+
+            virtual abstract protected void WriteLine(string Line)
+            {
+            }
+
+            protected void Allocate(string PortName, int FileSize)
+            {
+                CheckAndPrepareAllocation(PortName, FileSize, PortIndex, NumberOfBlocks);
+                for (int i = 1; i < NumberOfBlocks; i++)
+                {
+                    if ((i != 1))
+                    {
+                        WriteLine(",_CREATE_APPL_FILE_SECTOR((_ApplogStartSector+" + IntToStr(FBlockNumbers[PortIndex]) + "))");
+                    }
+                    else
+                    {
+                        WriteLine("_CREATE_APPL_FILE_SECTOR((_ApplogStartSector+" + IntToStr(FBlockNumbers[PortIndex]) + "))");
+                    }
+
+                    FPortInUse[PortIndex] = true;
+                    Inc(FBlockNumbers[PortIndex]);
+                }
+            }
+
+            public Create(IXmlDocument XMLDoc, TWriteCodeLineProcedure WriteProc)
+            {
+                FWriteCodeLineProcedure = WriteProc;
+                SetLength(FPortNames, 0);
+                SetLength(FPortSizes, 0);
+                SetLength(FPortBlockSizes, 0);
+                SetLength(FBlockNumbers, 0);
+                SetLength(FPortInUse, 0);
+                FileFormatNode = XMLDoc.DocumentElement.ChildNodes.FindNode("FileFormat");
+                FFText = XmlVal(FileFormatNode);
+                FFText = Copy(FFText, 1, 3);
+                FFValue = StrToInt(FFText);
+                if ((FFValue < 4))
+                {
+                    ApplogMemoryKeyword = "FileDrive";
+                    FMultipleApplogAllowed = false;
+                }
+                else
+                {
+                    ApplogMemoryKeyword = "DataDrive";
+                    FMultipleApplogAllowed = true;
+                }
+
+                PortNodes = GetXmlCollection(XMLDoc.DocumentElement, "Ports");
+                for (int i = 0; i < PortNodes.Count - 1; i++)
+                {
+                    PortNode = PortNodes[i];
+                    ApplogMemoryNode = PortNode.ChildNodes.FindNode(ApplogMemoryKeyword);
+                    if ((Assigned(ApplogMemoryNode)))
+                    {
+                        if ((XmlChildFindPath(ApplogMemoryNode, new HashSet() { "HWImplementation", "Applog" }, ApplogNode) || (ApplogMemoryKeyword == "FileDrive")))
+                        {
+                            SetLength(FPortNames, Length(FPortNames) + 1);
+                            SetLength(FPortSizes, Length(FPortSizes) + 1);
+                            SetLength(FPortBlockSizes, Length(FPortBlockSizes) + 1);
+                            SetLength(FBlockNumbers, Length(FBlockNumbers) + 1);
+                            SetLength(FPortInUse, Length(FPortInUse) + 1);
+                            FPortNames[high(FPortNames)] = XmlSubNodeVal(ApplogMemoryNode, "Name");
+                            FPortSizes[high(FPortSizes)] = StrToInt(Trim(XmlSubNodeVal(ApplogMemoryNode, "Size")));
+                            FPortBlockSizes[high(FPortBlockSizes)] = StrToInt(Trim(XmlSubNodeVal(ApplogMemoryNode, "BlockSize")));
+                            FBlockNumbers[high(FBlockNumbers)] = 0;
+                            FPortInUse[high(FPortInUse)] = false;
+                        }
+                    }
+                }
+            }
+
+            override public Destroy()
+            {
+                for (int i = low(FPortNames); i < high(FPortNames); i++)
+                {
+                    Finalize(FPortNames[i]);
+                }
+
+                Finalize(FPortNames);
+                Finalize(FPortSizes);
+                Finalize(FPortBlockSizes);
+                Finalize(FBlockNumbers);
+                Finalize(FPortInUse);
+                base;
+            }
+        }
+
+        public class TApplog2007MemoryManager : TApplogMemoryManager
+        {
+            override protected void WriteLine(string Line)
+            {
+                FWriteCodeLineProcedure(Line);
+            }
+
+            public Create(IXmlDocument XMLDoc, TWriteCodeLineProcedure WriteProc)
+            {
+                UniversalDoNothingWithTypes(&XMLDoc);
+                UniversalDoNothingWithTypes(&WriteProc);
+                base;
+            }
+
+            override public Destroy()
+            {
+                base;
+            }
+
+            virtual public void AllocateMemory(string PortName, int FileSize)
+            {
+                Allocate(PortName, FileSize);
+            }
+        }
+
+        public class TApplog2012MemoryManager : TApplogMemoryManager
+        {
+            protected StringsDictionary FApplogAreas;
+            protected TStrings FCurrentStrings;
+            protected void AllocateMemoryForAllApplogDefinitions(string P1xtName)
+            {
+                UniversalDoNothingWithString(P1xtName);
+                P1xtFile = null;
+                XMLDoc = null;
+                try
+                {
+                    foreach (var FileDek in P1x.FAllFilesHash.Values)
+                    {
+                        if (FileDek.FileExtEnum.Contains(new HashSet() { fdeeSsd }))
+                        {
+                            SsdName = FileDek.FileName;
+                            SsdFileName = ChangeFileExt(SsdName, SsdFileExtension);
+                            XMLDoc = LoadSsdFileAndCheckVersion(SsdFileName, SsdFileIsEncrypted);
+                            if ((XmlChildFind(XMLDoc.DocumentElement, SsdElSize, SizeNode)))
+                            {
+                                Size = StrToInt64(SizeNode.NodeValue);
+                                if ((!XmlChildFind(XMLDoc.DocumentElement, SsdElPortName, PortNameNode)))
+                                {
+                                    throw EP1Error.Create(_E_70_INTERNAL_INVALID_FORMAT_IN_FILE_ps, new HashSet() { SsdName });
+                                }
+
+                                if ((!XmlChildFind(XMLDoc.DocumentElement, SsdElGuid, UidNode)))
+                                {
+                                    throw EP1Error.Create(_E_70_INTERNAL_INVALID_FORMAT_IN_FILE_ps, new HashSet() { SsdName });
+                                }
+
+                                if ((0 == Size))
+                                {
+                                    if ((!XmlChildFind(XMLDoc.DocumentElement, SsdElDescription, DescriptionNode)))
+                                    {
+                                        throw EP1Error.Create(_E_70_INTERNAL_INVALID_FORMAT_IN_FILE_ps, new HashSet() { SsdName });
+                                    }
+
+                                    throw EP1Error.Create(_E_639_INCORRECT_SIZE_IN_ps_APPLICATION_LOG_SIZE_MUST_BE_GREATER_THAN_ZERO, new HashSet() { DescriptionNode.NodeValue });
+                                }
+
+                                FCurrentStrings = TStringList.Create;
+                                Allocate(PortNameNode.NodeValue, Size);
+                                FApplogAreas.Add(UidNode.NodeValue, FCurrentStrings);
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    P1xtFile.Free;
+                    XMLDoc = null;
+                    FCurrentStrings = null;
+                }
+            }
+
+            override protected void WriteLine(string Line)
+            {
+                if ((Assigned(FCurrentStrings)))
+                {
+                    FCurrentStrings.Add(Line);
+                }
+            }
+
+            public Create(IXmlDocument XMLDoc, TWriteCodeLineProcedure WriteProc, string P1xtName)
+            {
+                base.Create(XMLDoc, WriteProc);
+                FCurrentStrings = null;
+                FApplogAreas = StringsDictionary.Create(new HashSet() { doOwnsValues });
+                AllocateMemoryForAllApplogDefinitions(P1xtName);
+            }
+
+            override public Destroy()
+            {
+                FApplogAreas.Free;
+                base;
+            }
+
+            public void WriteAllocation(string ApplogAreaId)
+            {
+                if ((!FApplogAreas.TryGetValue(ApplogAreaId, Declarations)))
+                {
+                    throw EP1Error.Create(_E_569_INTERNAL_UNEXPECTED_BEHAVIOR_IN_FUNCTION_ps_ps, new HashSet() { "TApplog2012MemoryManager.WriteAllocation", "Applog area " + ApplogAreaId + " was not found" });
+                }
+
+                foreach (var Line in Declarations)
+                {
+                    FWriteCodeLineProcedure(Line);
+                }
+            }
+        }
+
+        public class TApplogSysData
+        {
+            private string[] FPortNames;
+            private int[] FPortBlockSizes;
+            public Create(IXmlDocument XMLDoc)
+            {
+                SetLength(FPortNames, 0);
+                SetLength(FPortBlockSizes, 0);
+                FileFormatNode = XMLDoc.DocumentElement.ChildNodes.FindNode("FileFormat");
+                FFText = XmlVal(FileFormatNode);
+                FFText = Copy(FFText, 1, 3);
+                FFValue = StrToInt(FFText);
+                if ((FFValue < 4))
+                {
+                    ApplogMemoryKeyword = "FileDrive";
+                }
+                else
+                {
+                    ApplogMemoryKeyword = "DataDrive";
+                }
+
+                PortNodes = GetXmlCollection(XMLDoc.DocumentElement, "Ports");
+                for (int i = 0; i < PortNodes.Count - 1; i++)
+                {
+                    PortNode = PortNodes[i];
+                    ApplogMemoryNode = PortNode.ChildNodes.FindNode(ApplogMemoryKeyword);
+                    if ((Assigned(ApplogMemoryNode)))
+                    {
+                        SetLength(FPortNames, Length(FPortNames) + 1);
+                        SetLength(FPortBlockSizes, Length(FPortBlockSizes) + 1);
+                        FPortNames[high(FPortNames)] = XmlSubNodeVal(ApplogMemoryNode, "Name");
+                        FPortBlockSizes[high(FPortBlockSizes)] = StrToInt(Trim(XmlSubNodeVal(ApplogMemoryNode, "BlockSize")));
+                    }
+                }
+            }
+
+            override public Destroy()
+            {
+                base;
+            }
+
+            public int GetBlockSize(string PortName)
+            {
+                for (int i = low(FPortNames); i < high(FPortNames); i++)
+                {
+                    if ((FPortNames[i] == PortName))
+                    {
+                        Result = FPortBlockSizes[i];
+                        Exit;
+                    }
+                }
+
+                throw EP1Error.Create(_E_315_APPLICATION_LOG_PORT_NOT_DEFINED_ps, new HashSet() { PortName });
+            }
+        }
+    }
+}
