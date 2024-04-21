@@ -258,6 +258,27 @@ public sealed class MethodDirectiveList() :
 
 public sealed class MethodKind() : DelphiNode(DelphiNodeKind.MethodKind), IEquatable<MethodKind>
 {
+    public required EMethodKind Kind { get; init; }
+    
+    protected override T Accept<T>(DelphiVisitor<T> visitor) => visitor.VisitMethodKind(this);
+    protected override void Accept(DelphiVisitor visitor) => visitor.VisitMethodKind(this);
+    public override IEnumerable<DelphiNode> Children => [];
+    protected override bool IsLeaf => true;
+
+    [SetsRequiredMembers]
+    public MethodKind(Source source, EMethodKind kind) : this()
+    {
+        Source = source;
+        Kind = kind;
+    }
+
+
+    public static MethodKind Procedure(Source source) => new(source, EMethodKind.Procedure);
+    public static MethodKind Function(Source source) => new(source, EMethodKind.Function);
+    public static MethodKind Constructor(Source source) => new(source, EMethodKind.Constructor);
+    public static MethodKind Destructor(Source source) => new(source, EMethodKind.Destructor);
+    public static MethodKind Operator(Source source) => new(source, EMethodKind.Operator);
+    
     public bool Equals(MethodKind? other)
     {
         return other != null && Kind == other.Kind;
@@ -282,27 +303,6 @@ public sealed class MethodKind() : DelphiNode(DelphiNodeKind.MethodKind), IEquat
     {
         return !Equals(left, right);
     }
-
-    public required EMethodKind Kind { get; init; }
-    
-    protected override T Accept<T>(DelphiVisitor<T> visitor) => visitor.VisitMethodKind(this);
-    protected override void Accept(DelphiVisitor visitor) => visitor.VisitMethodKind(this);
-    public override IEnumerable<DelphiNode> Children => [];
-    protected override bool IsLeaf => true;
-
-    [SetsRequiredMembers]
-    public MethodKind(Source source, EMethodKind kind) : this()
-    {
-        Source = source;
-        Kind = kind;
-    }
-
-
-    public static MethodKind Procedure(Source source) => new(source, EMethodKind.Procedure);
-    public static MethodKind Function(Source source) => new(source, EMethodKind.Function);
-    public static MethodKind Constructor(Source source) => new(source, EMethodKind.Constructor);
-    public static MethodKind Destructor(Source source) => new(source, EMethodKind.Destructor);
-    public static MethodKind Operator(Source source) => new(source, EMethodKind.Operator);
 }
 
 public enum EMethodKind

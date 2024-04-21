@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DelphiCSharp.Delphi;
+using DelphiCSharp.Semantics;
 
 namespace DelphiCSharp.Cs;
 
@@ -27,8 +28,8 @@ public partial class DelphiWalker
     public override MethodHead VisitMethodHead(Delphi.MethodHead head)
     {
         var name = VisitMethodName(head.Name);
-
         var mods = VisitMethodDirectiveList(head.Signature.Directives) ;
+        
         return new MethodHead
         {
             Name = name.Name,

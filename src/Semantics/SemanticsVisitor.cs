@@ -7,6 +7,7 @@ using DelphiCSharp.Cs;
 using DelphiCSharp.Delphi;
 using MethodDecl = DelphiCSharp.Delphi.MethodDecl;
 using MethodHead = DelphiCSharp.Delphi.MethodHead;
+using MethodKind = DelphiCSharp.Delphi.MethodKind;
 using TypeDecl = DelphiCSharp.Delphi.TypeDecl;
 
 namespace DelphiCSharp.Semantics;
@@ -153,6 +154,10 @@ public sealed class SemanticsVisitor : DelphiVisitor
         }));
         
         var method = names.Dequeue();
+        if (cx.Head.Signature.MethodKind.Kind is EMethodKind.Constructor or EMethodKind.Destructor && !names.TryPeek(out _))
+        {
+            method = Scopes.Peek().Key.Name;
+        }
         var methodKey = new Key(method, Scopes.Peek().Key);
         
         using (new Scoper(Scopes, method))
@@ -161,7 +166,14 @@ public sealed class SemanticsVisitor : DelphiVisitor
             {
                 while (names.TryDequeue(out var name))
                 {
-                    methodKey = new Key(name, methodKey);
+                    if (cx.Head.Signature.MethodKind.Kind is EMethodKind.Constructor or EMethodKind.Destructor && !names.TryPeek(out _))
+                    {
+                        methodKey = new Key(methodKey.Name, methodKey);
+                    }
+                    else
+                    {
+                        methodKey = new Key(name, methodKey);
+                    }
                 }
 
                 var hasDecl = Root.Symbols.TryGetValue(methodKey, out var declaration);
@@ -200,7 +212,7 @@ public sealed class SemanticsVisitor : DelphiVisitor
                     return;
                 }
             }
-            
+
             Root.Symbols.Add(methodKey, new MethodSymbol(methodKey, cx));
             VisitFormalParamsSection(cx.Head.Signature.Params);
         }
@@ -251,7 +263,6 @@ public sealed class Scope()
         {
             if (kvp.Key.Name == name && kvp.Key.Parent is { } par && par.Name == parent)
             {
-                // ((MethodSymbol)kvp.Value).AssociatedNodes.ForEach(m => m.Print("METHOD"));
                 return kvp.Value;
             }
         }

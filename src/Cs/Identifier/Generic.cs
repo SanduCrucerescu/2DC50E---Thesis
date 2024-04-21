@@ -128,7 +128,7 @@ public abstract class GenericConstraint() : CsNode(CsNodeKind.Constraint)
     protected override void Accept(CsVisitor visitor) => visitor.VisitGenericConstraint(this);
      public override IEnumerable<CsNode> Children => [];
     protected override bool IsLeaf => true;
-    
+
     public static readonly NewConstraint New = new();
     public static readonly ClassConstraint Class = new();
     public static readonly StructConstraint Struct = new();
@@ -158,7 +158,7 @@ public sealed class GenericsSeparated() : CsNode(CsNodeKind.GenericSeparated)
     protected override T Accept<T>(CsVisitor<T> visitor) => visitor.VisitGenericSeparated(this);
     protected override void Accept(CsVisitor visitor) => visitor.VisitGenericSeparated(this);
 }
-    
+
 public sealed class GenericConstraintsList() :
     CsCollection<
         GenericConstraintsList,

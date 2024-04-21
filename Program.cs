@@ -72,7 +72,7 @@ namespace DelphiCSharp
             
             var csWalker = new CsWalker();
             var csCode = csWalker.Visit(res);
-            csCode.NormalizeWhitespace().ToFullString().Write("code", "cs");
+            // csCode.NormalizeWhitespace().ToFullString().Write("code", "cs");
             csCode.NormalizeWhitespace().ToFullString().Print();
         }
     }

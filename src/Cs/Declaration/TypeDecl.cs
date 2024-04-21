@@ -53,31 +53,44 @@ public partial class DelphiWalker
         };
     }
     
-    private ClassDecl VisitClassDecl(Delphi.TypeDecl decl)
+    private ClassDecl VisitClassDecl(Delphi.TypeDecl cx)
     {
-        Debug.Assert(decl.TypeExpr is ClassTypeExpr);
-        var helper = VisitClassType((decl.TypeExpr as ClassTypeExpr)!);
-        var separated = VisitGenericsList(decl.Generics);
+        Debug.Assert(cx.TypeExpr is ClassTypeExpr);
+        var helper = VisitClassType((cx.TypeExpr as ClassTypeExpr)!);
+        var separated = VisitGenericsList(cx.Generics);
+        var className = VisitSimpleIdent(cx.Name);
 
         var ms = helper.Methods.Aggregate(new List<Cs.MethodDecl>(), (agg, m) =>
         {
-            agg.AddRange(Root.Resolve<MethodSymbol>(m.Head.Name.Text, decl.Name.Text)!
+            var methodName = m.Head.MethodKind is MethodKind.Constructor or MethodKind.Destructor
+                ? className
+                : m.Head.Name;
+            agg.AddRange(Root.Resolve<MethodSymbol>(methodName.Text, cx.Name.Text)!
                 .AssociatedNodes
                 .Where(met => VisitMethodHead(met.Head).EqualsSignature(m.Head))
                 .Select(node => new MethodDecl
                 {
-                    Head = m.Head,
+                    Head = new MethodHead
+                    {
+                        MethodKind = m.Head.MethodKind,
+                        Name = methodName,
+                        Parent = m.Head.Parent ?? methodName,
+                        TypeArguments = m.Head.TypeArguments,
+                        TypeConstraints = m.Head.TypeConstraints,
+                        ReturnType = m.Head.ReturnType,
+                        Params = m.Head.Params,
+                        Modifiers = m.Head.Modifiers,
+                    },
                     LocalDecls = m.LocalDecls,
                     Body = VisitStatement(node.Block.Body),
                     Source = m.Source,
-                })
-            );
+                }));
             return agg;
         });
         
         return new ClassDecl
         {
-            Name = VisitSimpleIdent(decl.Name),
+            Name = className,
             Modifiers = helper.Modifier is not null ? [helper.Modifier] : [],
             TypeArguments = separated.Args,
             TypeConstraints = separated.Constraints,
@@ -86,7 +99,7 @@ public partial class DelphiWalker
             Properties = helper.Properties,
             Types = helper.Types,
             Methods = [..ms],
-            Source = decl.Source,
+            Source = cx.Source,
         };
     }
 

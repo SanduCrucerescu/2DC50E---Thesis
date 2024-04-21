@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using DelphiCSharp.Cs;
 using Microsoft.CodeAnalysis;
@@ -8,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using MethodKind = DelphiCSharp.Cs.MethodKind;
 
 namespace DelphiCSharp.Gen;
 
@@ -97,6 +99,11 @@ public partial class CsWalker
 
     public override MemberDeclarationSyntax VisitMethodDecl(MethodDecl cx)
     {
+        // if (cx.Head.MethodKind is MethodKind.Constructor or MethodKind.Destructor)
+        // {
+        //     cx.Head.Modifiers.Add(MethodModifier.Static(Source.Conjured));
+        // }
+        
         var ls = cx.Head.Modifiers.Select(mod => mod.ModKind switch
         {
             MethodModifierKind.Dynamic => throw new NotImplementedException(),
@@ -120,10 +127,25 @@ public partial class CsWalker
         
         if (cx.Head.ReturnType is null)
         {
-            return ConstructorDeclaration(VisitSimpleSymbol(cx.Head.Name).Identifier)
-                .WithModifiers(mods)
-                .WithParameterList(ParameterList(SeparatedList(cx.Head.Params.Select(VisitMethodParam))))
-                .WithBody(cx.Body is CompoundStatement body ? VisitCompoundStatement(body) : Block(VisitStatement(cx.Body)));
+        //     cx.Head.MethodKind.Print("METHOD KIND");
+            return cx.Head.MethodKind switch
+            {
+                MethodKind.Constructor => ConstructorDeclaration(VisitSimpleSymbol(cx.Head.Name).Identifier)
+                    .WithModifiers(mods)
+                    .WithParameterList(ParameterList(SeparatedList(cx.Head.Params.Select(VisitMethodParam))))
+                    .WithBody(cx.Body is CompoundStatement body ? VisitCompoundStatement(body) : Block(VisitStatement(cx.Body))),
+                MethodKind.Destructor => DestructorDeclaration(VisitSimpleSymbol(cx.Head.Name).Identifier)
+                    .WithModifiers(mods)
+                    .WithParameterList(ParameterList(SeparatedList(cx.Head.Params.Select(VisitMethodParam))))
+                    .WithBody(cx.Body is CompoundStatement body ? VisitCompoundStatement(body) : Block(VisitStatement(cx.Body))),
+                MethodKind.Operator => throw new NotImplementedException(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            // cx.Head.Name.Print("CONSTRUCTOR");
+            // return ConstructorDeclaration(VisitSimpleSymbol(cx.Head.Name).Identifier)
+            // .WithModifiers(mods)
+            // .WithParameterList(ParameterList(SeparatedList(cx.Head.Params.Select(VisitMethodParam))))
+            // .WithBody(cx.Body is CompoundStatement body ? VisitCompoundStatement(body) : Block(VisitStatement(cx.Body)));
         }
         
         return MethodDeclaration(VisitType(cx.Head.ReturnType!), VisitSimpleSymbol(cx.Head.Name).Identifier)
