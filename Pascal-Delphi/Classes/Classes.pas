@@ -121,7 +121,7 @@ type
   var
     TypeStr: string;
   begin
-    WriteStr(TypeStr), TType);
+    WriteStr(TypeStr, TType);
     WriteLn(Format('Trinagle type: %s', [TypeStr]));
     WriteLn(Format('Shape width: %s', [FloatToStr(Width)]));
     WriteLn(Format('Shape height: %s', [FloatToStr(Height)]));

@@ -1,33 +1,33 @@
-﻿using NUnit.Framework;
-using NUnit.Framework.Legacy;
+﻿// using NUnit.Framework;
+// using NUnit.Framework.Legacy;
 
-namespace HelloWorld2;
+// namespace HelloWorld2;
 
-public class Program
-{
-    public static void Main()
-    {
-        Console.WriteLine("Hello World from Pascal!");
-        Console.ReadKey();
-    }
+// public class Program
+// {
+//     public static void Main()
+//     {
+//         Console.WriteLine("Hello World from Pascal!");
+//         Console.ReadKey();
+//     }
 
-    [TestFixture]
-    public class HelloWorldTests
-    {
-        private const string Expected = "Hello World from Pascal!";
+//     [TestFixture]
+//     public class HelloWorldTests
+//     {
+//         private const string Expected = "Hello World from Pascal!";
 
-        [Test]
-        public void Should_Print_Hello_World()
-        {
-            using (var sw = new StringWriter())
-            {
-                Console.SetOut(sw);
+//         [Test]
+//         public void Should_Print_Hello_World()
+//         {
+//             using (var sw = new StringWriter())
+//             {
+//                 Console.SetOut(sw);
 
-                Program.Main();
+//                 Program.Main();
 
-                var result = sw.ToString().Trim();
-                ClassicAssert.AreEqual(Expected, result);
-            }
-        }
-    }
-}
+//                 var result = sw.ToString().Trim();
+//                 ClassicAssert.AreEqual(Expected, result);
+//             }
+//         }
+//     }
+// }
