@@ -22,8 +22,8 @@ public partial class Visitor
         return new EnumVariant
         {
             Name = VisitIdent(cx.ident()),
-            Value = cx.expression() is { } expr
-                ? VisitExpression(expr)
+            Value = cx.constExpression() is { } expr
+                ? VisitConstExpression(expr)
                 : null,
             Source = Source.Of(cx),
         };
@@ -43,7 +43,7 @@ public sealed class EnumTypeExpr : TypeExpr
 public sealed class EnumVariant() : DelphiNode(DelphiNodeKind.EnumVariant)
 {
     public required SimpleIdent Name { get; init; }
-    public required Expr? Value { get; init; }
+    public required ConstExpr? Value { get; init; }
 
     public override IEnumerable<DelphiNode> Children => Value is not null ? [Name, Value] : [Name];
     protected override T Accept<T>(DelphiVisitor<T> visitor) => visitor.VisitEnumVariant(this);

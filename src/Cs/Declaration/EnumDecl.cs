@@ -1,9 +1,43 @@
 
 using System.Collections.Generic;
+using System.Linq;
 using DelphiCSharp.Delphi;
 
 namespace DelphiCSharp.Cs;
 
+public partial class DelphiWalker
+{
+    public EnumDecl VisitEnumDecl(Delphi.TypeDecl cx)
+    {
+        return new EnumDecl
+        {
+            Modifiers = [],
+            Name = VisitSimpleIdent(cx.Name),
+            Body = VisitEnumTypeExpr((cx.TypeExpr as EnumTypeExpr)!),
+            Source = cx.Source,
+        };
+    }
+
+    public override EnumBody VisitEnumTypeExpr(EnumTypeExpr cx)
+    {
+        return VisitEnumVariantList(cx.Variants);
+    }
+
+    public override EnumMemberDecl VisitEnumVariant(EnumVariant cx)
+    {
+        return new EnumMemberDecl
+        {
+            Symbol = VisitSimpleIdent(cx.Name),
+            Expr = cx.Value is { } val ? VisitConstExpr(val) : null,
+            Source = cx.Source,
+        };
+    }
+
+    public override EnumBody VisitEnumVariantList(EnumVariantList cx)
+    {
+        return EnumBody.From(cx.Select(VisitEnumVariant));
+    }
+}
 
 public sealed class EnumDecl : TypeDecl
 {

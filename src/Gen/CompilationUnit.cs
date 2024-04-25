@@ -32,7 +32,7 @@ public partial class CsWalker
         return decl switch
         {
             ClassDecl classDecl => VisitClassDecl(classDecl),
-            EnumDecl enumDecl => throw new NotImplementedException(),
+            EnumDecl enumDecl => VisitEnumType(enumDecl),
             InterfaceTypeDecl trait => throw new NotImplementedException(),
             DelegateDecl del => VisitDelegateDecl(del),
             _ => throw new ArgumentOutOfRangeException(nameof(decl))

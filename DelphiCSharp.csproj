@@ -20,6 +20,10 @@
         <PackageReference Include="SimdLinq" Version="1.3.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="tests\" />
+    </ItemGroup>
+
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <NoWarn>3021;1701;1702</NoWarn>
     </PropertyGroup>

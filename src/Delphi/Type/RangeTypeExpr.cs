@@ -39,6 +39,6 @@ public sealed class RangeTypeExpr : TypeExpr
     public required ConstExpr To { get; init; }
 
     public override IEnumerable<DelphiNode> Children => [From, To];
-    protected override T Accept<T>(DelphiVisitor<T> visitor) => visitor.VisitTypeExpr(this);
+    protected override T Accept<T>(DelphiVisitor<T> visitor) => visitor.VisitRangeTypeExpr(this);
 }
 

@@ -63,6 +63,7 @@ public abstract class DelphiVisitor<T>: Visitor<DelphiNode, DelphiNodeKind, T>
     public virtual T VisitParenthesizedExpr(ParenthesizedExpr cx) => VisitChildren(cx);
     public virtual T VisitTypeExpr(TypeExpr cx) => VisitChildren(cx);
     public virtual T VisitTypeExprList(TypeExprList cx) => VisitChildren(cx);
+    public virtual T VisitRangeTypeExpr(RangeTypeExpr cx) => VisitChildren(cx);
     public virtual T VisitSetTypeExpr(SetTypeExpr cx) => VisitChildren(cx);
     public virtual T VisitFileTypeExpr(FileTypeExpr cx) => VisitChildren(cx);
     public virtual T VisitIdentTypeExpr(IdentTypeExpr cx) => VisitChildren(cx);

@@ -27,8 +27,8 @@ public partial class Visitor
             Ident = VisitIdent(ident),
             Source = Source.Of(cx),
         };
-        if (cx.subRangeType() is { } range) return VisitSubRangeType(range);
         if (cx.enumType() is { } enm) return VisitEnumType(enm);
+        if (cx.subRangeType() is { } range) return VisitSubRangeType(range);
         throw new ArgumentOutOfRangeException(nameof(cx));
     }
 }

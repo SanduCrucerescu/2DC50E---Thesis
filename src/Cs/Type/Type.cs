@@ -50,11 +50,6 @@ public partial class DelphiWalker
             _ => throw new ArgumentOutOfRangeException(nameof(structured))
         };
     }
-
-    public override EnumDecl VisitEnumTypeExpr(EnumTypeExpr enumType)
-    {
-        throw new NotImplementedException();
-    }
 }
 
 public abstract class Type() : CsNode(CsNodeKind.Type)

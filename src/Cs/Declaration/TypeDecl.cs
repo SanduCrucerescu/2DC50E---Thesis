@@ -14,15 +14,15 @@ public partial class DelphiWalker
         return TypeDeclList.From(section.Items.Select(VisitTypeDecl).ToList());
     }
 
-    public override TypeDecl VisitTypeDecl(Delphi.TypeDecl decl)
+    public override TypeDecl VisitTypeDecl(Delphi.TypeDecl cx)
     {
-        return decl.TypeExpr switch
+        return cx.TypeExpr switch
         {
-            ClassTypeExpr => VisitClassDecl(decl),
+            ClassTypeExpr => VisitClassDecl(cx),
             ClassHelperTypeExpr => throw new NotImplementedException(),
-            ClassOfTypeExpr => VisitClassOfDecl(decl),
-            InterfaceTypeExpr interfaceTypeExpr => throw new NotImplementedException(),
-            EnumTypeExpr enumTypeExpr => throw new NotImplementedException(),
+            ClassOfTypeExpr => VisitClassOfDecl(cx),
+            InterfaceTypeExpr => throw new NotImplementedException(),
+            EnumTypeExpr => VisitEnumDecl(cx),
             SimpleRecordTypeExpr simpleRecordTypeExpr => throw new NotImplementedException(),
             VariantRecordTypeExpr variantRecordTypeExpr => throw new NotImplementedException(),
             RecordHelperTypeExpr recordHelperTypeExpr => throw new NotImplementedException(),
@@ -32,12 +32,12 @@ public partial class DelphiWalker
             
             StructuredTypeExpr structuredTypeExpr => throw new NotImplementedException(),
             
-            IdentTypeExpr identTypeExpr => throw new NotImplementedException(),
+            IdentTypeExpr => VisitIdentTypeDecl(cx),
             VariantTypeExpr variantTypeExpr => throw new NotImplementedException(),
             ConstTypeExpr constTypeExpr => throw new NotImplementedException(),
             
             FuncRefTypeExpr funcRefTypeExpr => throw new NotImplementedException(),
-            FuncTypeExpr => VisitFuncTypeDecl(decl),
+            FuncTypeExpr => VisitFuncTypeDecl(cx),
             GenericTypeExpr genericIdentTypeExpr => throw new NotImplementedException(),
             InferTypeExpr inferTypeExpr => throw new NotImplementedException(),
             MethodTypeExpr methodTypeExpr => throw new NotImplementedException(),
@@ -52,7 +52,14 @@ public partial class DelphiWalker
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-    
+
+    public TypeDecl VisitIdentTypeDecl(Delphi.TypeDecl cx)
+    {
+        cx.Print("IDENT");
+        throw new NotImplementedException();
+    }
+
+
     private ClassDecl VisitClassDecl(Delphi.TypeDecl cx)
     {
         Debug.Assert(cx.TypeExpr is ClassTypeExpr);

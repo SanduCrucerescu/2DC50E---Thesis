@@ -14,41 +14,43 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Visitor = DelphiCSharp.Delphi.Visitor;
 
-// MethodDeclarationSyntax methodDeclaration = SyntaxFactory
-            //     .MethodDeclaration(SyntaxFactory.ParseTypeName("void"), "MyMethod")
-            //     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-            //     .WithBody(SyntaxFactory.Block(SyntaxFactory.LocalDeclarationStatement(
-            //         SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("int"))
-            //             .AddVariables(SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier("age"))
-            //                 .WithInitializer(SyntaxFactory.EqualsValueClause(
-            //                         SyntaxFactory.ArrayCreationExpression(
-            //                             SyntaxFactory.ArrayType(
-            //                                 SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword)))
-            //                         )
-            //                     )
-            //                 )
-            //             )
-            //     )));
-            //
-            // Console.WriteLine(methodDeclaration.NormalizeWhitespace().ToFullString());
-
 namespace DelphiCSharp
 {
     public static class Program
     {
         public static void Main(string[] args)
         {
-            Try("big0");
+            Try("class2");
+            // if (args.Length != 1)
+            // {
+            //     "program <filename>".Print("USAGE");
+            //     return;
+            // }
+            
+            // Compile(args[0]);
         }
 
-        private static string ReadAllInput(string fn)
+        private static void Compile(string file)
         {
-            return System.IO.File.ReadAllText(fn);
+            var name = file.Split('.')[0];
+            var vis = new Visitor($"{name}.pas");
+            var cx = vis.Parser.file();
+            if (vis.Diagnostics.HasError())
+            {
+                vis.Diagnostics.Dump();
+            }
+            var delphiAst = vis.Visit(cx);
+            var sem = new SemanticsVisitor();
+            sem.Visit(delphiAst);
+            var delphiWalker = new DelphiWalker(sem.Root);
+            var csAst = delphiWalker.Visit(delphiAst);
+            var csWalker = new CsWalker();
+            var csCode = csWalker.Visit(csAst);
+            csCode.NormalizeWhitespace().ToFullString().Write(name, "cs");
         }
 
         private static void Try(string fn)
         {
-            // var input = ReadAllInput($"./examples/{fn}.pas");
             var vis = new Visitor($"./examples/{fn}.pas");
             var cx = vis.Parser.file();
 

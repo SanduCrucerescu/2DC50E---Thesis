@@ -201,14 +201,14 @@ procedureTypeHeading         : 'function' (formalParameterSection)? ':' (customA
 variantType                  : 'variant' // SzJ TODO TEMP
                              ;
 simpleType                   : ident
-                             | subRangeType
                              | enumType
+                             | subRangeType
                              ;
 subRangeType                 : constExpression ('..' constExpression)?
                              ;
 enumType                     : '(' enumVariant (',' enumVariant )* ')'
                              ;
-enumVariant                  : ident ('=' expression)?
+enumVariant                  : ident ('=' constExpression)?
                              ;
 //typeId                       : namespacedQualifiedIdent
 //                             ;

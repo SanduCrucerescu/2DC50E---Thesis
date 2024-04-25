@@ -4,12 +4,17 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using DelphiCSharp.Cs;
+using DelphiCSharp.Delphi;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using ClassFieldDecl = DelphiCSharp.Cs.ClassFieldDecl;
+using CompoundStatement = DelphiCSharp.Cs.CompoundStatement;
+using MethodDecl = DelphiCSharp.Cs.MethodDecl;
 using MethodKind = DelphiCSharp.Cs.MethodKind;
+using PropertyDecl = DelphiCSharp.Cs.PropertyDecl;
 
 namespace DelphiCSharp.Gen;
 
@@ -127,7 +132,6 @@ public partial class CsWalker
         
         if (cx.Head.ReturnType is null)
         {
-        //     cx.Head.MethodKind.Print("METHOD KIND");
             return cx.Head.MethodKind switch
             {
                 MethodKind.Constructor => ConstructorDeclaration(VisitSimpleSymbol(cx.Head.Name).Identifier)
@@ -141,18 +145,37 @@ public partial class CsWalker
                 MethodKind.Operator => throw new NotImplementedException(),
                 _ => throw new ArgumentOutOfRangeException()
             };
-            // cx.Head.Name.Print("CONSTRUCTOR");
-            // return ConstructorDeclaration(VisitSimpleSymbol(cx.Head.Name).Identifier)
-            // .WithModifiers(mods)
-            // .WithParameterList(ParameterList(SeparatedList(cx.Head.Params.Select(VisitMethodParam))))
-            // .WithBody(cx.Body is CompoundStatement body ? VisitCompoundStatement(body) : Block(VisitStatement(cx.Body)));
+        }
+
+        var resDecl = LocalDeclarationStatement(VariableDeclaration(VisitType(cx.Head.ReturnType!),
+            SeparatedList([VariableDeclarator(Identifier("Result"))])));
+        var retStatement = ReturnStatement(IdentifierName("Result"));
+        BlockSyntax methodBody;
+        if (cx.Body is CompoundStatement compound)
+        {
+            if (cx.Head.ReturnType is BuiltIn { Type: BuiltinType.Void })
+            {
+                methodBody = VisitCompoundStatement(compound);
+            }
+            else
+            {
+                var stmts = new List<StatementSyntax> { resDecl };
+                stmts.AddRange(VisitCompoundStatement(compound).Statements);
+                stmts.Add(retStatement);
+                methodBody = Block(stmts);
+            }
+        }
+        else
+        {
+            methodBody = cx.Head.ReturnType is BuiltIn { Type: BuiltinType.Void } 
+                ? Block(VisitStatement(cx.Body)) 
+                : Block(resDecl, VisitStatement(cx.Body), retStatement);
         }
         
         return MethodDeclaration(VisitType(cx.Head.ReturnType!), VisitSimpleSymbol(cx.Head.Name).Identifier)
             .WithModifiers(mods)
             .WithParameterList(ParameterList(SeparatedList(cx.Head.Params.Select(VisitMethodParam))))
-            .WithBody(cx.Body is CompoundStatement statement ? VisitCompoundStatement(statement) : Block(VisitStatement(cx.Body)));
-        // .WithExpressionBody(cx.Body is CompoundStatement ? null : VisitStatement(cx.Body));
+            .WithBody(methodBody);
     }
 
     public override ParameterSyntax VisitMethodParam(MethodParam cx)
