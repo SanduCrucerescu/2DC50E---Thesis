@@ -1,5 +1,8 @@
 program loops;
 
+{$MODE OBJFPC}
+{$M+}
+
 uses
   crt,
   SysUtils;
@@ -33,7 +36,7 @@ var
       end;
     until (Response > 0);
 
-    CheckIfInteger := Response;
+    Result := Response;
   end;
 
 
@@ -87,7 +90,7 @@ var
       AverageGrade := AverageGrade + Students[i].AverageGrade;
     end;
     AverageGrade := AverageGrade / Length(Students);
-    WriteLn(Format('Average class grade: %s', [AverageGrade]));
+    WriteLn('Average class grade: ', AverageGrade);
   end;
 
 begin
