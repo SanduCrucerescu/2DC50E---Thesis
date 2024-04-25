@@ -6,7 +6,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <StartupObject>loops1.Program</StartupObject>
+    <StartupObject>loops10.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

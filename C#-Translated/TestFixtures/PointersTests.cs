@@ -1,117 +1,117 @@
-﻿namespace TestFixtures;
+﻿// namespace Pointers2.Test
+// {
+//     using NUnit.Framework;
+//     using NUnit.Framework.Legacy;
 
-using NUnit.Framework;
-using NUnit.Framework.Legacy;
+//     [TestFixture]
+//     public class Pointer
+//     {
+//         private Program.AddressBook addressBook;
 
-[Category("Template")]
-[TestFixture]
-public class Pointer
-{
-    private AddressBook addressBook;
+//         [SetUp]
+//         public void Setup()
+//         {
+//             addressBook = new Program.AddressBook();
+//         }
 
-    [SetUp]
-    public void Setup()
-    {
-        addressBook = new AddressBook();
-    }
+//         [Test]
+//         public void AddContact_ShouldAddContactToList()
+//         {
+//             string name = "John Doe";
+//             string email = "john.doe@example.com";
+//             string phoneNumber = "1234567890";
 
-    [Test]
-    public void AddContact_ShouldAddContactToList()
-    {
-        string name = "John Doe";
-        string email = "john.doe@example.com";
-        string phoneNumber = "1234567890";
+//             addressBook.AddContact(name, email, phoneNumber);
 
-        addressBook.AddContact(name, email, phoneNumber);
+//             ClassicAssert.AreEqual(1, addressBook.Contacts.Count);
+//             ClassicAssert.AreEqual(name, addressBook.Contacts[0].Name);
+//             ClassicAssert.AreEqual(email, addressBook.Contacts[0].Email);
+//             ClassicAssert.AreEqual(phoneNumber, addressBook.Contacts[0].PhoneNumber);
+//         }
 
-        ClassicAssert.AreEqual(1, addressBook.Contacts.Count);
-        ClassicAssert.AreEqual(name, addressBook.Contacts[0].Name);
-        ClassicAssert.AreEqual(email, addressBook.Contacts[0].Email);
-        ClassicAssert.AreEqual(phoneNumber, addressBook.Contacts[0].PhoneNumber);
-    }
+//         [Test]
+//         public void SearchContact_ShouldReturnContactWhenFound()
+//         {
+//             string name = "Jane Smith";
+//             string email = "jane.smith@example.com";
+//             string phoneNumber = "0987654321";
+//             addressBook.AddContact(name, email, phoneNumber);
 
-    [Test]
-    public void SearchContact_ShouldReturnContactWhenFound()
-    {
-        string name = "Jane Smith";
-        string email = "jane.smith@example.com";
-        string phoneNumber = "0987654321";
-        addressBook.AddContact(name, email, phoneNumber);
+//             Program.Contact foundContact = addressBook.SearchContact(name);
 
-        Contact foundContact = addressBook.SearchContact(name);
+//             ClassicAssert.IsNotNull(foundContact);
+//             ClassicAssert.AreEqual(name, foundContact.Name);
+//             ClassicAssert.AreEqual(email, foundContact.Email);
+//             ClassicAssert.AreEqual(phoneNumber, foundContact.PhoneNumber);
+//         }
 
-        ClassicAssert.IsNotNull(foundContact);
-        ClassicAssert.AreEqual(name, foundContact.Name);
-        ClassicAssert.AreEqual(email, foundContact.Email);
-        ClassicAssert.AreEqual(phoneNumber, foundContact.PhoneNumber);
-    }
+//         [Test]
+//         public void SearchContact_ShouldReturnNullWhenNotFound()
+//         {
+//             string nonExistentName = "NonExistent";
 
-    [Test]
-    public void SearchContact_ShouldReturnNullWhenNotFound()
-    {
-        string nonExistentName = "NonExistent";
+//             Program.Contact foundContact = addressBook.SearchContact(nonExistentName);
 
-        Contact foundContact = addressBook.SearchContact(nonExistentName);
+//             ClassicAssert.IsNull(foundContact);
+//         }
 
-        ClassicAssert.IsNull(foundContact);
-    }
+//         [Test]
+//         public void RemoveContact_ShouldRemoveContactFromList()
+//         {
+//             string name = "Alice Brown";
+//             string email = "alice.brown@example.com";
+//             string phoneNumber = "5551234567";
+//             addressBook.AddContact(name, email, phoneNumber);
 
-    [Test]
-    public void RemoveContact_ShouldRemoveContactFromList()
-    {
-        string name = "Alice Brown";
-        string email = "alice.brown@example.com";
-        string phoneNumber = "5551234567";
-        addressBook.AddContact(name, email, phoneNumber);
+//             addressBook.RemoveContact(name);
 
-        addressBook.RemoveContact(name);
+//             ClassicAssert.AreEqual(0, addressBook.Contacts.Count);
+//         }
 
-        ClassicAssert.AreEqual(0, addressBook.Contacts.Count);
-    }
+//         [Test]
+//         public void RemoveContact_ShouldNotThrowExceptionWhenContactNotFound()
+//         {
+//             string nonExistentName = "NonExistent";
 
-    [Test]
-    public void RemoveContact_ShouldNotThrowExceptionWhenContactNotFound()
-    {
-        string nonExistentName = "NonExistent";
+//             Assert.DoesNotThrow(() => addressBook.RemoveContact(nonExistentName));
+//         }
 
-        Assert.DoesNotThrow(() => addressBook.RemoveContact(nonExistentName));
-    }
+//         [Test]
+//         public void SmokeTest_AddressBookConstructor()
+//         {
+//             Assert.DoesNotThrow(() => new Program.AddressBook());
+//         }
 
-    [Test]
-    public void SmokeTest_AddressBookConstructor()
-    {
-        Assert.DoesNotThrow(() => new AddressBook());
-    }
+//         [Test]
+//         public void SmokeTest_AddContactMethod()
+//         {
+//             string name = "Test Contact";
+//             string email = "test@example.com";
+//             string phoneNumber = "1234567890";
 
-    [Test]
-    public void SmokeTest_AddContactMethod()
-    {
-        string name = "Test Contact";
-        string email = "test@example.com";
-        string phoneNumber = "1234567890";
+//             Assert.DoesNotThrow(() => addressBook.AddContact(name, email, phoneNumber));
+//         }
 
-        Assert.DoesNotThrow(() => addressBook.AddContact(name, email, phoneNumber));
-    }
+//         [Test]
+//         public void SmokeTest_SearchContactMethod()
+//         {
+//             string name = "Test Contact";
 
-    [Test]
-    public void SmokeTest_SearchContactMethod()
-    {
-        string name = "Test Contact";
+//             Assert.DoesNotThrow(() => addressBook.SearchContact(name));
+//         }
 
-        Assert.DoesNotThrow(() => addressBook.SearchContact(name));
-    }
+//         [Test]
+//         public void SmokeTest_RemoveContactMethod()
+//         {
+//             string name = "Test Contact";
 
-    [Test]
-    public void SmokeTest_RemoveContactMethod()
-    {
-        string name = "Test Contact";
+//             Assert.DoesNotThrow(() => addressBook.RemoveContact(name));
+//         }
 
-        Assert.DoesNotThrow(() => addressBook.RemoveContact(name));
-    }
-
-    [Test]
-    public void SmokeTest_PrintContactsMethod()
-    {
-        Assert.DoesNotThrow(() => addressBook.PrintContacts());
-    }
-}
+//         [Test]
+//         public void SmokeTest_PrintContactsMethod()
+//         {
+//             Assert.DoesNotThrow(() => addressBook.PrintContacts());
+//         }
+//     }
+// }

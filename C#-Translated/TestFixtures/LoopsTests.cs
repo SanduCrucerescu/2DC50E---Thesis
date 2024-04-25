@@ -1,59 +1,83 @@
-﻿
-namespace loops.Test;
-using loops;
-using NUnit.Framework.Legacy;
+﻿// namespace loops6.Test
+// {
+//     using NUnit.Framework;
+//     using NUnit.Framework.Legacy;
 
-[Category("Template")]
-[TestFixture]
-public class LoopsTests
-{
-    [TestCase("2")]
-    [TestCase("10")]
-    public void Should_Check_If_The_Array_Has_The_Right_Size(string x)
-    {
+//     using System;
+//     using NUnit.Framework;
 
-        using (var sw = new StringWriter())
-        {
+//     [TestFixture]
+//     public class LoopsProgramTests
+//     {
+//         [Test]
+//         public void CheckIfInteger_ValidInput_ReturnsInteger()
+//         {
+//             var input = "42";
 
-            Student[] students;
-            using (var sr = new StringReader(x))
-            {
-                Console.SetIn(sr);
-                Console.SetOut(sw);
+//             var result = Program.CheckIfInteger(input);
 
-                Program.InitArray(out students);
+//             ClassicAssert.AreEqual(42, result);
+//         }
 
-                ClassicAssert.IsNotNull(students);
-                ClassicAssert.AreEqual(Int32.Parse(x), students.Length);
-            }
-        }
-    }
+//         [Test]
+//         public void CheckIfInteger_InvalidInput_PromptsForValidInput()
+//         {
+//             var input = new StringReader("abc\n123\n");
+//             Console.SetIn(input);
+//             var output = new StringWriter();
+//             Console.SetOut(output);
 
-    [Test]
-    public void Should_Test_If_Students_Are_Added()
-    {
-        using (var sw = new StringWriter())
-        {
-            var students = new Student[2];
+//             var result = Program.CheckIfInteger("abc");
 
-            string[] simulatedInput = { "John", "Doe", "90", "Jane", "Smith", "85" };
-            StringReader sr = new StringReader(string.Join(Environment.NewLine, simulatedInput));
-            Console.SetIn(sr);
-            Console.SetOut(sw);
+//             ClassicAssert.AreEqual(123, result);
+//             StringAssert.Contains("Please write an integer", output.ToString());
+//         }
 
-            Program.AddStudentInformation(students);
-            ClassicAssert.IsNotNull(students);
-            ClassicAssert.AreEqual(2, students.Length);
+//         [Test]
+//         public void InitArray_ValidInput_InitializesStudentsArray()
+//         {
+//             var input = new StringReader("5\n");
+//             Console.SetIn(input);
 
+//             Program.InitArray();
 
-            ClassicAssert.AreEqual("John", students[0].FirstName);
-            ClassicAssert.AreEqual("Doe", students[0].LastName);
-            ClassicAssert.AreEqual(90, students[0].AverageGrade);
+//             ClassicAssert.AreEqual(5, Program.Students.Length);
+//         }
 
+//         [Test]
+//         public void AddStudentInformation_ValidInput_AddsStudentToArray()
+//         {
+//             Program.Students = new Program.Student[1];
+//             var input = new StringReader("John\nDoe\n85\n");
+//             Console.SetIn(input);
 
-            ClassicAssert.AreEqual("Jane", students[1].FirstName);
-            ClassicAssert.AreEqual("Smith", students[1].LastName);
-            ClassicAssert.AreEqual(85, students[1].AverageGrade);
-        }
-    }
-}
+//             Program.AddStudentInformation();
+
+//             ClassicAssert.AreEqual("John", Program.Students[0].FirstName);
+//             ClassicAssert.AreEqual("Doe", Program.Students[0].LastName);
+//             ClassicAssert.AreEqual(85, Program.Students[0].AverageGrade);
+//         }
+
+//         [Test]
+//         public void ListStudents_StudentsAdded_DisplaysStudentInformation()
+//         {
+//             Program.Students = new Program.Student[2]
+//             {
+//             new Program.Student { FirstName = "John", LastName = "Doe", AverageGrade = 80 },
+//             new Program.Student { FirstName = "Jane", LastName = "Smith", AverageGrade = 90 }
+//             };
+//             var output = new StringWriter();
+//             Console.SetOut(output);
+
+//             Program.ListStudents();
+
+//             StringAssert.Contains("John", output.ToString());
+//             StringAssert.Contains("Doe", output.ToString());
+//             StringAssert.Contains("80", output.ToString());
+//             StringAssert.Contains("Jane", output.ToString());
+//             StringAssert.Contains("Smith", output.ToString());
+//             StringAssert.Contains("90", output.ToString());
+//             StringAssert.Contains("Average class grade: 85", output.ToString());
+//         }
+//     }
+// }

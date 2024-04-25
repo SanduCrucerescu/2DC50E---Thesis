@@ -1,4 +1,4 @@
-﻿namespace BankAccountSystem
+﻿namespace BankAccountSystem7
 {
     using AccountUnit7;
     using TransactionUnit7;

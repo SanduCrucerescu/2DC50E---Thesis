@@ -1,7 +1,7 @@
 ﻿// using NUnit.Framework;
 // using NUnit.Framework.Legacy;
 
-// namespace loops1;
+// namespace loops111;
 // public class Program
 // {
 

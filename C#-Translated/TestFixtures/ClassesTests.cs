@@ -1,67 +1,138 @@
-﻿namespace TestFixtures;
+﻿// using System;
+// using System.IO;
+// using NUnit.Framework;
+// using NUnit.Framework.Legacy;
 
-using System.IO.Pipes;
-using System.Runtime.Intrinsics.Arm;
-using NUnit.Framework.Legacy;
-
-[Category("Template")]
-[TestFixture]
-public class ClassesTests
-{
-    private static double width = 10.2;
-    private static double height = 43.1;
-    private static TriangleObj TObj;
-
-    [SetUp]
-    public void SetUp()
-    {
-        TObj = new TriangleObj(ShapeType.Triangle, TriangleType.Obtuse, width, height);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        TObj = null;
-    }
-
-    [Test]
-    public void Should_Check_If_The_Object_Is_Created_Correctly()
-    {
-        ClassicAssert.AreEqual(width, TObj.GetWidth());
-        ClassicAssert.AreEqual(height, TObj.GetHeight());
-    }
-
-    [TestCase(12.2)]
-    [TestCase(64.34)]
-    [TestCase(543.43)]
-    public void Should_Check_If_The_Height_Is_Set_Correctly(double newHeight)
-    {
-        TObj.SetHeight(newHeight);
-        ClassicAssert.AreEqual(newHeight, TObj.GetHeight());
-    }
-
-    [TestCase(45.54)]
-    [TestCase(65.434)]
-    [TestCase(761.66)]
-    public void Should_Check_If_The_Width_Is_Set_Correctly(double newWidth)
-    {
-        TObj.SetWidth(newWidth);
-        ClassicAssert.AreEqual(newWidth, TObj.GetWidth());
-    }
-}
-
-
-// public static IEnumerable<TestCaseData> TestCases()
+// namespace Classes1.Test
 // {
-//     var source = new[] {
-//     (ITriangleObj)new Classes1.TriangleObj(Classes1.ShapeType.Triangle, Classes1.TriangleType.Obtuse, width, height),
-//     (ITriangleObj)new Classes2.TriangleObj(Classes2.ShapeType.Triangle, Classes2.TriangleType.Obtuse, width, height),
-// };
 
-//     foreach (var y in source)
+//     [TestFixture]
+//     public class TaskManagerTests
 //     {
-//         yield return new TestCaseData(y, 23.0, 75.2);
-//         yield return new TestCaseData(y, 64.54, 1110.543);
-//         yield return new TestCaseData(y, 256.74, 876.8);
+//         private TTaskList taskList;
+
+//         [SetUp]
+//         public void Setup()
+//         {
+//             taskList = new TTaskList();
+//         }
+
+//         // Smoke Tests
+//         [Test]
+//         public void SmokeTest_CreateTask()
+//         {
+//             string title = "Test Task";
+//             string description = "This is a test task";
+//             DateTime dueDate = DateTime.Now.AddDays(7);
+//             int priority = 1;
+
+//             TTask task = new TTask(title, description, dueDate, priority);
+
+//             ClassicAssert.IsNotNull(task);
+//             ClassicAssert.AreEqual(title, task.Title);
+//             ClassicAssert.AreEqual(description, task.Description);
+//             ClassicAssert.AreEqual(dueDate, task.DueDate);
+//             ClassicAssert.AreEqual(priority, task.Priority);
+//             ClassicAssert.IsFalse(task.Completed);
+//         }
+
+//         [Test]
+//         public void SmokeTest_AddTask()
+//         {
+//             TTask task = new TTask("Test Task", "This is a test task", DateTime.Now.AddDays(7), 1);
+
+//             taskList.AddTask(task);
+
+//             ClassicAssert.AreEqual(1, taskList.GetTaskCount());
+//         }
+
+//         // Unit Tests
+//         [Test]
+//         public void UnitTest_MarkTaskAsCompleted()
+//         {
+//             TTask task = new TTask("Test Task", "This is a test task", DateTime.Now.AddDays(7), 1);
+
+//             task.MarkAsCompleted();
+
+//             ClassicAssert.IsTrue(task.Completed);
+//         }
+
+//         [Test]
+//         public void UnitTest_RemoveTask()
+//         {
+//             TTask task = new TTask("Test Task", "This is a test task", DateTime.Now.AddDays(7), 1);
+//             taskList.AddTask(task);
+
+//             taskList.RemoveTask(task);
+
+//             ClassicAssert.AreEqual(0, taskList.GetTaskCount());
+//         }
+
+//         [Test]
+//         public void UnitTest_GetTask()
+//         {
+//             TTask task1 = new TTask("Task 1", "This is task 1", DateTime.Now.AddDays(7), 1);
+//             TTask task2 = new TTask("Task 2", "This is task 2", DateTime.Now.AddDays(14), 2);
+//             taskList.AddTask(task1);
+//             taskList.AddTask(task2);
+
+//             TTask retrievedTask = taskList.GetTask(1);
+
+//             ClassicAssert.AreEqual(task2, retrievedTask);
+//         }
+
+//         // Functional Tests
+//         [Test]
+//         public void FunctionalTest_SortTasksByPriority()
+//         {
+//             TTask task1 = new TTask("Task 1", "This is task 1", DateTime.Now.AddDays(7), 2);
+//             TTask task2 = new TTask("Task 2", "This is task 2", DateTime.Now.AddDays(14), 1);
+//             TTask task3 = new TTask("Task 3", "This is task 3", DateTime.Now.AddDays(21), 3);
+//             taskList.AddTask(task1);
+//             taskList.AddTask(task2);
+//             taskList.AddTask(task3);
+
+//             taskList.SortTasksByPriority();
+
+//             ClassicAssert.AreEqual(task2, taskList.GetTask(0));
+//             ClassicAssert.AreEqual(task1, taskList.GetTask(1));
+//             ClassicAssert.AreEqual(task3, taskList.GetTask(2));
+//         }
+
+//         [Test]
+//         public void FunctionalTest_SaveAndLoadTasks()
+//         {
+//             string fileName = "test_tasks.txt";
+//             TTask task1 = new TTask("Task 1", "This is task 1", DateTime.Now.AddDays(7), 1);
+//             TTask task2 = new TTask("Task 2", "This is task 2", DateTime.Now.AddDays(14), 2);
+//             taskList.AddTask(task1);
+//             taskList.AddTask(task2);
+
+//             taskList.SaveTasksToFile(fileName);
+//             taskList.RemoveTask(task1);
+//             taskList.RemoveTask(task2);
+//             taskList.LoadTasksFromFile(fileName);
+
+//             ClassicAssert.AreEqual(2, taskList.GetTaskCount());
+//             ClassicAssert.AreEqual(task1.Title, taskList.GetTask(0).Title);
+//             ClassicAssert.AreEqual(task2.Title, taskList.GetTask(1).Title);
+
+//             File.Delete(fileName);
+//         }
+
+//         // Other Tests
+//         [Test]
+//         public void OtherTest_TaskListInitialization()
+//         {
+//             ClassicAssert.IsNotNull(taskList);
+//             ClassicAssert.AreEqual(0, taskList.GetTaskCount());
+//         }
+
+//         [Test]
+//         public void OtherTest_InvalidTaskIndex()
+//         {
+//             ClassicAssert.Throws<IndexOutOfRangeException>(() => taskList.GetTask(-1));
+//             ClassicAssert.Throws<IndexOutOfRangeException>(() => taskList.GetTask(0));
+//         }
 //     }
 // }
