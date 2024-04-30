@@ -1,6 +1,6 @@
 program TaskManagerApp;
 
-{$MODE OBJFPC}
+{$MODE delphi}
 {$M+}
 
 uses
