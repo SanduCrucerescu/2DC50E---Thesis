@@ -2,9 +2,10 @@ using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using static HeapSort2.Program;
 
-namespace HeapSort2.Test
+namespace HeapSort2Fix.Test
 {
     [TestFixture]
+    [Category("Run")]
     public class HeapSortTests
     {
         [Test]
